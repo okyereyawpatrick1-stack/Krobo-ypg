@@ -566,7 +566,7 @@ function addMember(){
   var members=getMembers();members.push(m);saveMembers(members);
   document.getElementById("memberName").value="";document.getElementById("memberPhone").value="";document.getElementById("memberGroup").value="";
   document.getElementById("memberAddStatus").innerHTML='<span class="status ok">Member added!</span>';
-  renderMembers();toast("Member added!");autoPush();
+  renderMembers();toast("Member added!");pushNow();
 }
 function getSelectedMembers(){
   var checks=document.querySelectorAll(".memCheck:checked");
@@ -611,7 +611,7 @@ function deleteMember(id,btn){
   saveAtt(getAtt().map(function(rec){return{date:rec.date,members:rec.members.filter(function(x){return x.id!==id})}}).filter(function(rec){return rec.members.length}));
   saveDues(getDues().map(function(rec){return{month:rec.month,members:rec.members.filter(function(x){return x.id!==id})}}).filter(function(rec){return rec.members.length}));
   renderManage();renderMembers();renderAttendance();renderDues();renderDashboard();
-  toast('Deleted "'+m.name+'"');autoPush();
+  toast('Deleted "'+m.name+'"');pushNow();
 }
 document.getElementById("manageSearch").addEventListener("input",renderManage);
 
@@ -677,7 +677,7 @@ document.getElementById("btnSaveAttendance").addEventListener("click",function()
   if(idx!==-1)att[idx]={date,members:memberObjs};else att.push({date,members:memberObjs});
   saveAtt(att);
   document.getElementById("attSaveStatus").innerHTML='<span class="ok">Attendance saved for '+date+'</span>';
-  toast("Attendance saved!");renderAttReport(date);autoPush();
+  toast("Attendance saved!");renderAttReport(date);pushNow();
 });
 
 /* BULK CALLS */
@@ -1021,7 +1021,7 @@ document.getElementById("btnUnselectPaid").addEventListener("click",function(){d
 document.getElementById("btnSaveDueAmount").addEventListener("click",function(){
   var v=parseFloat(document.getElementById("duesAmount").value);
   if(isNaN(v)||v<=0){toast("Enter a valid amount");return}
-  setDueAmount(v);toast("Due amount set to GHS "+v.toFixed(2));renderDues();autoPush();
+  setDueAmount(v);toast("Due amount set to GHS "+v.toFixed(2));renderDues();pushNow();
 });
 document.getElementById("btnSaveDues").addEventListener("click",saveDuesPayments);
 document.getElementById("btnDuesDownload").addEventListener("click",downloadDuesReport);
@@ -1065,7 +1065,7 @@ function saveDuesPayments(){
   saveDues(without);
   document.getElementById("duesSaveStatus").innerHTML='<span class="ok">Payments saved for '+month+'</span>';
   toast("Payments saved!");
-  renderDues();autoPush();
+  renderDues();pushNow();
 }
 function monthStats(month){
   var members=getMembers();
@@ -1142,15 +1142,15 @@ document.getElementById("btnTopUpSms").addEventListener("click",topUpSms);
 
 /* CLOUD SYNC - Firebase Realtime Database via plain REST (OYEREPA format) */
 function fbUrl(dbUrl,path){return dbUrl.replace(/\/+$/,"")+"/"+path+".json"}
-function fbFetch(dbUrl,path,method,body){
-  return fetch(fbUrl(dbUrl,path),{method:method,body:body?JSON.stringify(body):undefined,headers:{"Content-Type":"application/json"}})
+function fbFetch(dbUrl,path,method,body,keepalive){
+  return fetch(fbUrl(dbUrl,path),{method:method,body:body?JSON.stringify(body):undefined,headers:{"Content-Type":"application/json"},keepalive:!!keepalive})
     .then(function(r){return r.json().catch(function(){return null})});
 }
 function syncPush(s){
   if(!s.fbUrl)return Promise.resolve({ok:false,error:"No Firebase URL set"});
   var data={settings:s,members:getMembers(),attendance:getAtt(),dues:getDues(),dueAmount:getDueAmount()};
   if(s.fbPassword)data.password=s.fbPassword;
-  return fbFetch(s.fbUrl,"kypg","PUT",data).then(function(res){return{ok:true}})
+  return fbFetch(s.fbUrl,"kypg","PUT",data,true).then(function(res){return{ok:true}})
     .catch(function(e){return{ok:false,error:"Could not reach Firebase: "+e.message}});
 }
 function syncPull(s){
@@ -1169,12 +1169,21 @@ function syncPull(s){
 }
 function refreshAfterSync(){try{renderMembers()}catch(e){}try{renderAttendance()}catch(e){}try{renderDues()}catch(e){}renderDashboard()}
 var _pushT=null,_lastPull=0,_pulling=false;
+function pushNow(){
+  var s=getSettings();
+  if(!s.fbUrl)return;
+  clearTimeout(_pushT);
+  syncPush(s).catch(function(){});
+}
 function autoPush(){
   var s=getSettings();
   if(!s.fbUrl)return;
   clearTimeout(_pushT);
   _pushT=setTimeout(function(){syncPush(getSettings()).catch(function(){})},800);
 }
+window.addEventListener("pagehide",function(){
+  if(_pushT){clearTimeout(_pushT);syncPush(getSettings()).catch(function(){})}
+});
 function autoPull(force){
   if(_pulling)return;
   var s=getSettings();
