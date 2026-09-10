@@ -8,9 +8,9 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Krobo YPG">
 <link rel="manifest" href="manifest.json">
-<link rel="icon" type="image/png" sizes="32x32" href="icons/icon-32.png">
-<link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
-<link rel="apple-touch-icon" href="icons/icon-180.png">
+<link rel="icon" type="image/png" sizes="32x32" href="icon-32.png">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-180.png">
 <title>Krobo Presbyterian (YPG)</title>
 <style>
 :root{--navy:#1e1b4b;--navy2:#312e81;--gold:#f59e0b;--gold2:#d97706;--cream:#fef3c7;--red:#ef4444;--green:#10b981;--blue:#3b82f6;--purple:#8b5cf6;--surface:#1a1840;--card:#252250;--card2:#2e2a62;--text:#f1f0f5;--text2:#b0adc0;--border:#3d3a66;--radius:14px;--shadow:0 4px 24px rgba(0,0,0,.45)}
@@ -140,6 +140,7 @@ select.input{cursor:pointer}
       <div class="nav-group-label">MAIN</div>
       <button class="nav-item" data-tab="dashboard"><span style="font-size:18px">&#127968;</span> Dashboard</button>
       <button class="nav-item" data-tab="members"><span style="font-size:18px">&#128101;</span> Members</button>
+      <button class="nav-item" data-tab="manage"><span style="font-size:18px">&#128465;</span> Manage Members</button>
       <button class="nav-item" data-tab="attendance"><span style="font-size:18px">&#9733;</span> Attendance</button>
     </div>
     <div class="nav-group">
@@ -218,15 +219,38 @@ select.input{cursor:pointer}
       </div>
     </section>
 
+    <!-- MANAGE MEMBERS -->
+    <section id="tab-manage" class="tab-page">
+      <div class="card">
+        <h2>Manage Members</h2>
+        <p class="hint">Delete a member to remove them permanently, including their attendance and dues records.</p>
+        <input type="search" id="manageSearch" class="input" placeholder="Search...">
+        <div id="manageList" class="contact-list" style="margin-top:12px"></div>
+      </div>
+    </section>
+
     <!-- ATTENDANCE -->
     <section id="tab-attendance" class="tab-page">
       <div class="card">
         <h2>Mark Attendance</h2>
+        <p class="hint">Tick the members who were present, then Save.</p>
         <div class="field"><label>Date</label><input id="attDate" class="input" type="date"></div>
         <div id="attendanceList" class="contact-list" style="margin-top:12px"></div>
         <div class="btn-row" style="margin-top:16px">
           <button id="btnSaveAttendance" class="btn btn-primary">Save</button>
         </div>
+        <div id="attSaveStatus" class="status"></div>
+      </div>
+      <div class="card">
+        <h2>Attendance Report</h2>
+        <div id="attReportSummary" class="hint">Loading...</div>
+        <div class="btn-row" style="margin-top:8px">
+          <button id="btnAttDownload" class="btn btn-primary">Download Report</button>
+        </div>
+        <div class="report-title">Present &#10003; (<span id="attPresentCount">0</span>)</div>
+        <div id="attReportPresent" class="contact-list"></div>
+        <div class="report-title">Absent &#10007; (<span id="attAbsentCount">0</span>)</div>
+        <div id="attReportAbsent" class="contact-list"></div>
       </div>
     </section>
 
@@ -501,10 +525,11 @@ function navTo(tab){
   document.getElementById("tab-"+tab).classList.add("active");
   document.querySelectorAll(".nav-item").forEach(function(b){b.classList.toggle("active",b.dataset.tab===tab)});
   document.querySelectorAll(".bottom-nav-item").forEach(function(b){b.classList.toggle("active",b.dataset.tab===tab)});
-  var titles = {dashboard:"Dashboard",members:"Members",attendance:"Attendance",dues:"Dues / Payments",calls:"Bulk Calls",sms:"Bulk SMS",settings:"Settings"};
+  var titles = {dashboard:"Dashboard",members:"Members",manage:"Manage Members",attendance:"Attendance",dues:"Dues / Payments",calls:"Bulk Calls",sms:"Bulk SMS",settings:"Settings"};
   document.getElementById("pageTitle").textContent = titles[tab] || tab;
   if(tab==="dashboard")renderDashboard();
   if(tab==="members")renderMembers();
+  if(tab==="manage")renderManage();
   if(tab==="attendance")renderAttendance();
   if(tab==="dues")renderDues();
   if(tab==="calls")refreshVoiceBalance();
@@ -566,19 +591,83 @@ document.getElementById("btnAddSelectedToSms").addEventListener("click",function
   navTo("sms");toast(sel.length+" members added to SMS");
 });
 
-/* ATTENDANCE */
-function renderAttendance(){
-  var date=document.getElementById("attDate").value;
-  var members=getMembers();
-  var list=document.getElementById("attendanceList");
-  if(!members.length){list.innerHTML='<div class="empty">Register members first.</div>';return}
-  var att=getAtt().find(function(a){return a.date===date});
+/* MANAGE MEMBERS (delete) */
+function renderManage(){
+  var q=(document.getElementById("manageSearch").value||"").toLowerCase();
+  var members=getMembers().filter(function(m){return(m.name+" "+m.phone+" "+m.group).toLowerCase().includes(q)});
+  var list=document.getElementById("manageList");
+  if(!members.length){list.innerHTML='<div class="empty">No members found.</div>';return}
   list.innerHTML=members.map(function(m){
-    var checked=att&&att.members.find(function(x){return x.id===m.id})?att.members.find(function(x){return x.id===m.id}).present:true;
-    return '<div class="contact"><input type="checkbox" id="att_'+m.id+'" '+(checked?'checked':'')+'><div class="avatar">'+esc(m.name.charAt(0).toUpperCase())+'</div><div class="info"><span class="name">'+esc(m.name)+'</span><span class="num">'+esc(m.phone)+'</span></div></div>';
+    return '<div class="contact"><div class="avatar">'+esc(m.name.charAt(0).toUpperCase())+'</div><div class="info"><span class="name">'+esc(m.name)+'</span><span class="num">'+esc(m.phone)+' '+esc(m.group||'')+'</span></div><button class="btn btn-danger" onclick="deleteMember(\''+m.id+'\',this)">Delete</button></div>';
   }).join('');
 }
+function deleteMember(id,btn){
+  var members=getMembers();
+  var m=members.find(function(x){return x.id===id});
+  if(!m){toast("Member not found");return}
+  if(!confirm('Delete "'+m.name+'" permanently? This also removes their attendance and dues records.'))return;
+  btn.disabled=true;
+  members=members.filter(function(x){return x.id!==id});saveMembers(members);
+  saveAtt(getAtt().map(function(rec){return{date:rec.date,members:rec.members.filter(function(x){return x.id!==id})}}).filter(function(rec){return rec.members.length}));
+  saveDues(getDues().map(function(rec){return{month:rec.month,members:rec.members.filter(function(x){return x.id!==id})}}).filter(function(rec){return rec.members.length}));
+  renderManage();renderMembers();renderAttendance();renderDues();renderDashboard();
+  toast('Deleted "'+m.name+'"');autoPush();
+}
+document.getElementById("manageSearch").addEventListener("input",renderManage);
+
+/* ATTENDANCE */
+function todayStr(){var d=new Date();return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0")}
+function renderAttendance(){
+  var dateInput=document.getElementById("attDate");
+  if(!dateInput.value)dateInput.value=todayStr();
+  var date=dateInput.value;
+  var members=getMembers();
+  var list=document.getElementById("attendanceList");
+  if(!members.length){list.innerHTML='<div class="empty">Register members first.</div>';renderAttReport(date);return}
+  var att=getAtt().find(function(a){return a.date===date});
+  list.innerHTML=members.map(function(m){
+    var rec=att&&att.members.find(function(x){return x.id===m.id});
+    var checked=rec?rec.present:true;
+    return '<div class="contact"><input type="checkbox" id="att_'+m.id+'" '+(checked?'checked':'')+'><div class="avatar">'+esc(m.name.charAt(0).toUpperCase())+'</div><div class="info"><span class="name">'+esc(m.name)+'</span><span class="num">'+esc(m.phone)+'</span></div></div>';
+  }).join('');
+  renderAttReport(date);
+}
+function renderAttReport(date){
+  var members=getMembers();
+  var rec=getAtt().find(function(a){return a.date===date});
+  var present=[];var absent=[];
+  members.forEach(function(m){
+    var r=rec&&rec.members.find(function(x){return x.id===m.id});
+    if(r&&!r.present)absent.push(m);else present.push(m);
+  });
+  document.getElementById("attPresentCount").textContent=present.length;
+  document.getElementById("attAbsentCount").textContent=absent.length;
+  document.getElementById("attReportSummary").innerHTML=members.length?'<strong>'+present.length+'</strong> present of <strong>'+members.length+'</strong> members &middot; <strong>'+absent.length+'</strong> absent.':'Register members to see reports.';
+  function row(m,cls){return '<div class="contact"><div class="avatar">'+esc(m.name.charAt(0).toUpperCase())+'</div><div class="info"><span class="name">'+esc(m.name)+'</span><span class="num">'+esc(m.phone)+'</span></div><span class="dues-badge '+(cls?'ok':'bad')+'">'+(cls?'PRESENT':'ABSENT')+'</span></div>'}
+  document.getElementById("attReportPresent").innerHTML=present.map(function(m){return row(m,1)}).join("")||'<div class="empty">Nobody marked present.</div>';
+  document.getElementById("attReportAbsent").innerHTML=absent.map(function(m){return row(m,0)}).join("")||'<div class="empty">Everyone was present!</div>';
+}
+function downloadAttReport(){
+  var date=document.getElementById("attDate").value||todayStr();
+  var members=getMembers();
+  var rec=getAtt().find(function(a){return a.date===date});
+  var csv=[];csv.push("Date,Name,Phone,Status");
+  members.forEach(function(m){
+    var r=rec&&rec.members.find(function(x){return x.id===m.id});
+    var present=r?r.present:true;
+    csv.push([date,'"'+String(m.name).replace(/"/g,'""')+'"',m.phone,present?"PRESENT":"ABSENT"].join(","));
+  });
+  csv.push("");
+  csv.push("Summary,"+members.filter(function(m){var r=rec&&rec.members.find(function(x){return x.id===m.id});return r?!r.present:true}).length+" present / "+members.length+" members,");
+  var blob=new Blob([csv.join("\r\n")],{type:"text/csv;charset=utf-8"});
+  var a=document.createElement("a");
+  a.href=URL.createObjectURL(blob);
+  a.download="krobo-ypg-attendance-"+date+".csv";
+  document.body.appendChild(a);a.click();document.body.removeChild(a);
+  toast("Report downloaded");
+}
 document.getElementById("attDate").addEventListener("change",renderAttendance);
+document.getElementById("btnAttDownload").addEventListener("click",downloadAttReport);
 document.getElementById("btnSaveAttendance").addEventListener("click",function(){
   var date=document.getElementById("attDate").value;
   if(!date){toast("Select a date");return}
@@ -586,7 +675,9 @@ document.getElementById("btnSaveAttendance").addEventListener("click",function()
   var memberObjs=members.map(function(m){return{id:m.id,present:document.getElementById("att_"+m.id)?.checked||false}});
   var att=getAtt();var idx=att.findIndex(function(a){return a.date===date});
   if(idx!==-1)att[idx]={date,members:memberObjs};else att.push({date,members:memberObjs});
-  saveAtt(att);toast("Attendance saved!");autoPush();
+  saveAtt(att);
+  document.getElementById("attSaveStatus").innerHTML='<span class="ok">Attendance saved for '+date+'</span>';
+  toast("Attendance saved!");renderAttReport(date);autoPush();
 });
 
 /* BULK CALLS */

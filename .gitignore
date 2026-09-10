@@ -1,0 +1,11 @@
+# Never upload these
+node_modules/
+.env
+.env.local
+server.js
+package.json
+package-lock.json
+
+# OS junk
+.DS_Store
+Thumbs.db
