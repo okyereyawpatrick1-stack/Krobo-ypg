@@ -1,0 +1,1125 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#1e1b4b">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Krobo YPG">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" type="image/png" sizes="32x32" href="icons/icon-32.png">
+<link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/icon-180.png">
+<title>Krobo Presbyterian (YPG)</title>
+<style>
+:root{--navy:#1e1b4b;--navy2:#312e81;--gold:#f59e0b;--gold2:#d97706;--cream:#fef3c7;--red:#ef4444;--green:#10b981;--blue:#3b82f6;--purple:#8b5cf6;--surface:#1a1840;--card:#252250;--card2:#2e2a62;--text:#f1f0f5;--text2:#b0adc0;--border:#3d3a66;--radius:14px;--shadow:0 4px 24px rgba(0,0,0,.45)}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%;font-family:'Inter',sans-serif;background:#0d0b25;color:#f1f0f5;-webkit-tap-highlight-color:transparent}
+a{color:inherit;text-decoration:none}
+button{font-family:inherit}
+input,select,textarea{font-family:inherit}
+.sidebar{position:fixed;top:0;left:0;bottom:0;width:260px;background:linear-gradient(180deg,#3D0F1C 0%,var(--navy) 40%,#4A1525 100%);color:rgba(255,255,255,.9);z-index:100;display:flex;flex-direction:column;overflow-y:auto}
+.sidebar-header{padding:20px;display:flex;align-items:center;gap:12px;border-bottom:1px solid rgba(255,255,255,.08)}
+.sidebar-logo{width:44px;height:44px;border-radius:50%;object-fit:cover;border:2px solid rgba(255,255,255,.15)}
+.sidebar-brand{flex:1;min-width:0}
+.sidebar-title{font-size:16px;font-weight:700;color:#fff;display:block;margin-bottom:4px}
+.sidebar-nav{flex:1;padding:12px 0}
+.nav-group{margin-bottom:8px}
+.nav-group-label{padding:16px 20px 6px;font-size:11px;font-weight:600;letter-spacing:1.2px;text-transform:uppercase;color:rgba(255,255,255,.35)}
+.nav-item{display:flex;align-items:center;gap:12px;padding:10px 20px;font-size:14px;font-weight:500;color:rgba(255,255,255,.65);background:transparent;border:none;width:100%;text-align:left;cursor:pointer;border-left:3px solid transparent}
+.nav-item:hover{color:#fff;background:rgba(255,255,255,.06)}
+.nav-item.active{color:#fff;background:rgba(255,255,255,.1);border-left-color:var(--gold)}
+.main-area{margin-left:260px;min-height:100vh;display:flex;flex-direction:column}
+.topbar{position:sticky;top:0;z-index:50;background:linear-gradient(135deg,var(--navy),var(--navy2));border-bottom:1px solid var(--border);padding:12px 24px;display:flex;align-items:center;gap:16px}
+.page-title{font-size:20px;font-weight:700;color:var(--gold);flex:1}
+.content{flex:1;max-width:900px;width:100%;margin:0 auto;padding:24px 20px 40px}
+.tab-page{display:none;animation:fadeIn .25s ease}
+.tab-page.active{display:block}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:24px;margin-bottom:20px}
+.card h2{font-size:18px;font-weight:700;color:var(--gold);margin-bottom:4px}
+.hint{font-size:13px;color:var(--text2);margin:4px 0 14px;line-height:1.5}
+.field label{display:block;font-weight:600;font-size:13px;margin-top:12px;margin-bottom:4px;color:var(--text2);text-transform:uppercase;letter-spacing:.3px}
+.field label:first-child{margin-top:0}
+.input{width:100%;border:1.5px solid var(--border);border-radius:var(--radius-sm);padding:10px 14px;font-size:14px;background:var(--surface);color:var(--text);transition:border-color .2s}
+.input:focus{outline:none;border-color:var(--gold);box-shadow:0 0 0 3px rgba(245,158,11,.1)}
+.input::placeholder{color:var(--text2)}
+textarea.input{resize:vertical;min-height:60px}
+select.input{cursor:pointer}
+.btn-row{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0}
+.btn-row.small{gap:6px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;background:var(--card2);border:1.5px solid var(--border);color:var(--text2);border-radius:10px;padding:9px 16px;font-size:13px;font-weight:600;cursor:pointer;transition:all .2s;white-space:nowrap}
+.btn:hover{border-color:var(--text2);color:var(--text)}
+.btn:active{transform:scale(.97)}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.btn-primary{background:linear-gradient(135deg,var(--gold),var(--gold2));border-color:transparent;color:var(--navy);box-shadow:0 2px 4px rgba(245,158,11,.25)}
+.btn-primary:hover{box-shadow:0 4px 8px rgba(245,158,11,.35)}
+.btn-lg{width:100%;padding:14px;font-size:15px;border-radius:var(--radius)}
+.btn-ghost{border-color:transparent;color:var(--text2);background:transparent}
+.btn-ghost:hover{background:rgba(245,158,11,.1);color:var(--gold)}
+.btn-danger{border-color:var(--red);color:var(--red);background:rgba(239,68,68,.1)}
+.btn-record{background:var(--red);border-color:var(--red);color:#fff}
+.btn-record.recording{animation:pulse 1s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
+.status{margin-top:10px;font-size:14px;color:var(--text2);min-height:20px;white-space:pre-wrap}
+.status.error{color:var(--red)}
+.status.ok{color:var(--green)}
+.log{margin-top:12px;max-height:260px;overflow-y:auto;font-size:13px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:12px}
+.log div{padding:3px 0;border-bottom:1px solid var(--border)}
+.log div:last-child{border-bottom:none}
+.log .ok{color:var(--green);font-weight:600}
+.log .err{color:var(--red);font-weight:600}
+.log .info{color:var(--text2)}
+.contact-list{max-height:60vh;overflow-y:auto;border:1px solid var(--border);border-radius:var(--radius);background:var(--card)}
+.contact{display:flex;align-items:center;gap:12px;padding:12px 14px;border-bottom:1px solid var(--border);transition:background .2s}
+.contact:last-child{border-bottom:none}
+.contact:hover{background:var(--surface)}
+.contact input[type=checkbox]{width:18px;height:18px;accent-color:var(--gold);flex-shrink:0;cursor:pointer}
+.contact .avatar{width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,var(--gold),var(--gold2));color:var(--navy);display:inline-flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;flex-shrink:0}
+.contact .info{flex:1;min-width:0}
+.contact .info .name{font-weight:600;font-size:14px;color:var(--text);display:block}
+.contact .info .num{font-size:13px;color:var(--text2);display:block;margin-top:1px}
+.wallet-card{background:var(--surface);border:1px solid var(--border);padding:16px;border-radius:var(--radius);margin-bottom:16px}
+.wallet-card h3{margin:0 0 8px;font-size:15px;font-weight:700;color:var(--gold)}
+.stats-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-bottom:20px}
+.stat-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:16px}
+.stat-card .lbl{font-size:11px;letter-spacing:.8px;text-transform:uppercase;color:var(--text2);font-weight:600}
+.stat-card .val{font-size:24px;font-weight:800;color:var(--text);margin-top:6px}
+.stat-card .sub{font-size:12px;color:var(--text2);margin-top:4px;line-height:1.4}
+.stat-card.gold{background:linear-gradient(135deg,rgba(245,158,11,.15),transparent);border-color:rgba(245,158,11,.4)}
+.stat-card.green{background:linear-gradient(135deg,rgba(16,185,129,.12),transparent);border-color:rgba(16,185,129,.35)}
+.stat-card.blue{background:linear-gradient(135deg,rgba(59,130,246,.12),transparent);border-color:rgba(59,130,246,.35)}
+.stat-card.purple{background:linear-gradient(135deg,rgba(139,92,246,.12),transparent);border-color:rgba(139,92,246,.35)}
+.dues-badge{display:inline-block;padding:2px 10px;border-radius:999px;font-size:12px;font-weight:700}
+.dues-badge.ok{background:rgba(16,185,129,.15);color:var(--green)}
+.dues-badge.bad{background:rgba(239,68,68,.15);color:var(--red)}
+.report-title{font-size:13px;font-weight:700;margin:14px 0 6px;color:var(--text2);text-transform:uppercase;letter-spacing:.3px}
+.empty{color:var(--text2);font-size:13px;padding:20px;text-align:center}
+.dash-actions{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+.dash-actions .btn{width:100%;padding:14px;font-size:14px}
+@media(max-width:480px){.stats-grid{grid-template-columns:1fr}}
+.bottom-nav{position:fixed;bottom:0;left:0;right:0;z-index:60;background:linear-gradient(135deg,var(--navy),var(--card2));border-top:1px solid var(--border);display:flex;justify-content:space-around;padding:6px 0 env(safe-area-inset-bottom);backdrop-filter:blur(12px)}
+.bottom-nav-item{display:flex;flex-direction:column;align-items:center;gap:2px;background:none;border:none;color:var(--text2);font-size:10px;font-weight:600;padding:6px 12px;border-radius:var(--radius-sm);transition:color .2s;cursor:pointer}
+.bottom-nav-item svg{width:22px;height:22px}
+.bottom-nav-item.active{color:var(--gold)}
+.sidebar-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:99;backdrop-filter:blur(2px)}
+.sidebar-close{display:none;background:rgba(255,255,255,.1);border:none;color:#fff;width:32px;height:32px;border-radius:8px;font-size:20px}
+@keyframes recording{0%,100%{box-shadow:0 0 0 0 rgba(220,38,38,.4)}50%{box-shadow:0 0 0 8px rgba(220,38,38,0)}}
+.hidden{display:none!important}
+@media(max-width:767px){
+.sidebar{transform:translateX(-100%)}
+.sidebar.open{transform:translateX(0)}
+.sidebar-overlay.open{display:block}
+.sidebar-close{display:flex}
+.main-area{margin-left:0}
+.bottom-nav{display:flex}
+.content{padding-bottom:calc(var(--bottom-nav-h) + 16px)}
+}
+@media(max-width:480px){
+.card{padding:16px}
+.card h2{font-size:15px}
+.input{padding:8px 12px;font-size:14px}
+.btn{padding:6px 10px;font-size:12px}
+}
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-header">
+    <img src="logo.png" alt="Krobo YPG" class="sidebar-logo">
+    <div class="sidebar-brand">
+      <span class="sidebar-title">Krobo YPG</span>
+    </div>
+    <button class="sidebar-close" id="sidebarClose" aria-label="Close">&times;</button>
+  </div>
+  <nav class="sidebar-nav">
+    <div class="nav-group">
+      <div class="nav-group-label">MAIN</div>
+      <button class="nav-item" data-tab="dashboard"><span style="font-size:18px">&#127968;</span> Dashboard</button>
+      <button class="nav-item" data-tab="members"><span style="font-size:18px">&#128101;</span> Members</button>
+      <button class="nav-item" data-tab="attendance"><span style="font-size:18px">&#9733;</span> Attendance</button>
+    </div>
+    <div class="nav-group">
+      <div class="nav-group-label">COMMUNICATION</div>
+      <button class="nav-item" data-tab="calls"><span style="font-size:18px">&#128222;</span> Bulk Calls</button>
+      <button class="nav-item" data-tab="sms"><span style="font-size:18px">&#128231;</span> Bulk SMS</button>
+    </div>
+    <div class="nav-group">
+      <div class="nav-group-label">FINANCE</div>
+      <button class="nav-item" data-tab="dues"><span style="font-size:18px">&#128176;</span> Dues / Payments</button>
+    </div>
+    <div class="nav-group">
+      <div class="nav-group-label">SYSTEM</div>
+      <button class="nav-item" data-tab="settings"><span style="font-size:18px">&#9881;</span> Settings</button>
+    </div>
+  </nav>
+</aside>
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+<!-- MAIN -->
+<div class="main-area">
+  <div class="topbar">
+    <button id="btnOpenMenu" class="sidebar-close" aria-label="Menu">&#9776;</button>
+    <h2 class="page-title" id="pageTitle">Dashboard</h2>
+  </div>
+  <main class="content">
+    <!-- DASHBOARD -->
+    <section id="tab-dashboard" class="tab-page active">
+      <div class="card">
+        <h2>Krobo Presbyterian (YPG)</h2>
+        <p class="hint">Youth Prayer Group Membership &amp; Communication Platform</p>
+      </div>
+      <div class="stats-grid" id="dashStats">
+        <div class="stat-card gold"><div class="lbl">Members</div><div class="val" id="dashMembers">0</div><div class="sub">Registered members</div></div>
+        <div class="stat-card green"><div class="lbl">Dues This Month</div><div class="val" id="dashDuesPaid">0/<span id="dashDuesTotal">0</span></div><div class="sub">Paid &middot; GHS <span id="dashDuesCollected">0.00</span> collected</div></div>
+        <div class="stat-card blue"><div class="lbl">SMS Credits</div><div class="val" id="dashSms">&#8230;</div><div class="sub">Bulk SMS balance</div></div>
+        <div class="stat-card purple"><div class="lbl">Voice Credits</div><div class="val" id="dashVoice">&#8230;</div><div class="sub">Bulk call balance</div></div>
+      </div>
+      <div class="card">
+        <h2>Quick Actions</h2>
+        <div class="dash-actions">
+          <button class="btn btn-primary" onclick="navTo('members')">&#10133; Add Member</button>
+          <button class="btn btn-primary" onclick="navTo('dues')">&#128176; Mark Dues</button>
+          <button class="btn" onclick="navTo('calls')">&#128222; Bulk Calls</button>
+          <button class="btn" onclick="navTo('sms')">&#128231; Bulk SMS</button>
+          <button class="btn" onclick="topUpSms()">&#128176; Top Up SMS</button>
+          <button class="btn" onclick="topUpVoice()">&#128176; Top Up Voice</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- MEMBERS -->
+    <section id="tab-members" class="tab-page">
+      <div class="card">
+        <h2>Register Members</h2>
+        <div class="field"><label>Name</label><input id="memberName" class="input" type="text" placeholder="Full name"></div>
+        <div class="field"><label>Phone</label><input id="memberPhone" class="input" type="tel" placeholder="e.g. +233..."></div>
+        <div class="field"><label>Group</label><input id="memberGroup" class="input" type="text" placeholder="e.g. Choir, Youth"></div>
+        <div class="btn-row">
+          <button id="btnAddMember" class="btn btn-primary">Add Member</button>
+          <button id="btnLoadMembers" class="btn">Load</button>
+        </div>
+        <div id="memberAddStatus" class="status"></div>
+      </div>
+      <div class="card">
+        <div class="card-head">
+          <h2>Members (<span id="memberCount">0</span>)</h2>
+          <div class="btn-row small">
+            <button id="btnSelectAll" class="btn btn-ghost">Select all</button>
+            <button id="btnAddSelectedToCalls" class="btn btn-ghost">Add to Calls</button>
+            <button id="btnAddSelectedToSms" class="btn btn-ghost">Add to SMS</button>
+          </div>
+        </div>
+        <input type="search" id="memberSearch" class="input" placeholder="Search...">
+        <div id="memberList" class="contact-list" style="margin-top:12px"></div>
+      </div>
+    </section>
+
+    <!-- ATTENDANCE -->
+    <section id="tab-attendance" class="tab-page">
+      <div class="card">
+        <h2>Mark Attendance</h2>
+        <div class="field"><label>Date</label><input id="attDate" class="input" type="date"></div>
+        <div id="attendanceList" class="contact-list" style="margin-top:12px"></div>
+        <div class="btn-row" style="margin-top:16px">
+          <button id="btnSaveAttendance" class="btn btn-primary">Save</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- DUES -->
+    <section id="tab-dues" class="tab-page">
+      <div class="card">
+        <h2>Monthly Dues</h2>
+        <p class="hint">Mark which members paid for the selected month, then Save Payments. Every paid member is recorded for that month.</p>
+        <div class="field">
+          <label>Month</label>
+          <input id="duesMonth" class="input" type="month">
+        </div>
+        <div class="field">
+          <label>Monthly Due (GHS per member)</label>
+          <div class="btn-row">
+            <input id="duesAmount" class="input" type="number" min="0" step="0.5" value="5" style="flex:1">
+            <button id="btnSaveDueAmount" class="btn">Set</button>
+          </div>
+        </div>
+        <p class="hint" id="duesProgressHint"></p>
+        <div id="duesList" class="contact-list" style="margin-top:12px"></div>
+        <div class="btn-row" style="margin-top:16px">
+          <button id="btnSaveDues" class="btn btn-primary">Save Payments</button>
+          <button id="btnSelectPaid" class="btn">All Paid</button>
+          <button id="btnUnselectPaid" class="btn">All Unpaid</button>
+        </div>
+        <div id="duesSaveStatus" class="status"></div>
+      </div>
+      <div class="card">
+        <h2>Monthly Report</h2>
+        <div id="duesReportSummary" class="hint">Loading...</div>
+        <div class="btn-row" style="margin-top:8px">
+          <button id="btnDuesDownload" class="btn btn-primary">Download Report</button>
+        </div>
+        <div class="report-title">Paid &#10003; (<span id="duesPaidCount">0</span>)</div>
+        <div id="duesReportPaid" class="contact-list"></div>
+        <div class="report-title">Not Paid &#10007; (<span id="duesUnpaidCount">0</span>)</div>
+        <div id="duesReportUnpaid" class="contact-list"></div>
+      </div>
+    </section>
+
+    <!-- BULK CALLS -->
+    <section id="tab-calls" class="tab-page">
+      <div class="card">
+        <h2>Send Bulk Voice Calls</h2>
+        <div class="field">
+          <label>Recipients</label>
+          <div class="btn-row">
+            <button id="callAddAll" class="btn btn-ghost">Add all members</button>
+            <button id="callAddSelected" class="btn btn-ghost">Add selected</button>
+          </div>
+          <p class="hint" id="callCount">0 recipients</p>
+          <textarea id="callRecipients" class="input" rows="3" placeholder="One phone number per line."></textarea>
+        </div>
+        <div class="field">
+          <label>Record Announcement</label>
+          <div class="btn-row">
+            <button id="btnRecStart" class="btn btn-record" style="font-size:12px">&#128265; Record</button>
+            <button id="btnRecStop" class="btn btn-danger" style="font-size:12px" disabled>Stop</button>
+          </div>
+          <p class="hint" id="recTimer">Not recording</p>
+        </div>
+        <div class="field" id="recordingPreviewWrap" style="display:none">
+          <label>Your Recording</label>
+          <audio id="recordingPreview" class="input" controls style="width:100%"></audio>
+          <p class="hint" id="recordingHint"></p>
+          <div class="btn-row">
+            <button id="btnRecDiscard" class="btn btn-ghost" style="font-size:12px">Discard recording</button>
+          </div>
+        </div>
+        <div class="field">
+          <label>Or upload audio file (mp3/wav)</label>
+          <input id="callAudioFile" class="input" type="file" accept="audio/*">
+          <p class="hint" id="audioFileHint">No file selected.</p>
+        </div>
+        <div id="voiceWalletCard" class="wallet-card">
+          <h3>Voice Wallet</h3>
+          <p class="hint" id="voiceBalanceDisplay">Loading balance...</p>
+          <div class="btn-row">
+            <button id="btnRefreshVoice" class="btn btn-ghost" style="font-size:12px">Refresh</button>
+            <button id="btnTopUpVoice" class="btn btn-primary" style="font-size:12px">Top Up Voice</button>
+          </div>
+        </div>
+        <button id="btnCallAll" class="btn btn-primary btn-lg">Call All Now</button>
+        <div id="callProgress" class="status"></div>
+        <div id="callLog" class="log"></div>
+      </div>
+    </section>
+
+    <!-- BULK SMS -->
+    <section id="tab-sms" class="tab-page">
+      <div class="card">
+        <h2>Send Bulk SMS</h2>
+        <div class="field">
+          <label>Recipients</label>
+          <div class="btn-row">
+            <button id="smsAddAll" class="btn btn-ghost">Add all members</button>
+            <button id="smsAddSelected" class="btn btn-ghost">Add selected</button>
+          </div>
+          <p class="hint" id="smsCount">0 recipients</p>
+          <textarea id="smsRecipients" class="input" rows="3" placeholder="One phone number per line."></textarea>
+        </div>
+        <div class="field">
+          <label>Message</label>
+          <textarea id="smsMessage" class="input" rows="4" placeholder="Type your SMS message..."></textarea>
+          <p class="hint" id="smsCharCount">0 characters</p>
+        </div>
+        <div class="field">
+          <label>Sender ID (max 11 chars)</label>
+          <input id="smsSenderId" class="input" type="text" placeholder="e.g. KROBOYPG" maxlength="11">
+        </div>
+        <div id="smsWalletCard" class="wallet-card">
+          <h3>SMS Wallet</h3>
+          <p class="hint" id="smsBalanceDisplay">Loading balance...</p>
+          <div class="btn-row">
+            <button id="btnRefreshSms" class="btn btn-ghost" style="font-size:12px">Refresh</button>
+            <button id="btnTopUpSms" class="btn btn-primary" style="font-size:12px">Top Up SMS</button>
+          </div>
+        </div>
+        <button id="btnSendSms" class="btn btn-primary btn-lg">Send SMS Now</button>
+        <div id="smsProgress" class="status"></div>
+        <div id="smsLog" class="log"></div>
+      </div>
+    </section>
+
+    <!-- SETTINGS -->
+    <section id="tab-settings" class="tab-page">
+      <div id="settingsContent">
+        <div class="card">
+          <h2>Provider</h2>
+          <div class="field">
+            <label>Provider</label>
+            <select id="setProvider" class="input"><option value="bmsafrica">BMS Africa (mNotify)</option></select>
+          </div>
+          <div class="field">
+            <label>BMS Africa API Key</label>
+            <input id="setBmsKey" class="input" type="password" placeholder="Your BMS Africa API key">
+          </div>
+          <div class="field">
+            <label>Campaign / Sender ID</label>
+            <input id="setCampaign" class="input" type="text" placeholder="e.g. KROBOYPG">
+          </div>
+          <div class="field">
+            <label>Proxy URL</label>
+            <input id="setProxyUrl" class="input" type="url" placeholder="https://your-proxy.workers.dev">
+            <p class="hint">This is the Cloudflare Worker that forwards requests to BMS Africa.</p>
+          </div>
+          <div class="btn-row">
+            <button id="btnTestApi" class="btn btn-primary">Test Connection</button>
+            <button id="btnSaveSettings" class="btn">Save</button>
+          </div>
+          <div id="apiTestResult" class="status"></div>
+        </div>
+        <div class="card">
+          <h2>Share Data on All Devices</h2>
+          <p class="hint">Members, attendance and dues live in each phone's browser. To see them on every device, create a free Firebase Realtime Database (firebase.google.com &rarr; Realtime Database &rarr; Start in test mode), copy its URL here, Save, then tap <strong>Save to Cloud</strong> on one device. Other phones: enter the same URL + password, then tap <strong>Sync from Cloud</strong>.</p>
+          <div class="field">
+            <label>Firebase Realtime Database URL</label>
+            <input id="setFbUrl" class="input" type="text" placeholder="https://your-app-default-rtdb.firebaseio.com">
+          </div>
+          <div class="field">
+            <label>Share password (optional)</label>
+            <input id="setFbPassword" class="input" type="password" placeholder="Leave empty for none">
+            <p class="hint" id="fbShareLink"></p>
+          </div>
+          <div class="btn-row">
+            <button id="btnPushCloud" class="btn btn-primary">Save to Cloud</button>
+            <button id="btnPullCloud" class="btn">Sync from Cloud</button>
+          </div>
+          <div id="cloudStatus" class="status"></div>
+        </div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<!-- BOTTOM NAV -->
+<nav class="bottom-nav" id="bottomNav">
+  <button class="bottom-nav-item" data-tab="dashboard"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg><span>Home</span></button>
+  <button class="bottom-nav-item" data-tab="members"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg><span>Members</span></button>
+  <button class="bottom-nav-item" data-tab="attendance"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg><span>Attend</span></button>
+  <button class="bottom-nav-item" data-tab="dues"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 12V8H6a2 2 0 0 1-2-2c0-1.1.9-2 2-2h12v4"/><path d="M4 6v12a2 2 0 0 0 2 2h14v-4"/><path d="M18 12a2 2 0 0 0 0 4h-4a2 2 0 0 0 0-4z"/></svg><span>Dues</span></button>
+  <button class="bottom-nav-item" data-tab="calls"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72"/></svg><span>Calls</span></button>
+  <button class="bottom-nav-item" data-tab="sms"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg><span>SMS</span></button>
+</nav>
+
+<div id="toast" class="toast"></div>
+
+<script>
+/* CONFIG - auto-fill from localStorage */
+(function(){
+  try {
+    var s = JSON.parse(localStorage.getItem("kypg_settings") || "{}");
+    if(!s.provider) s.provider = "bmsafrica";
+    if(!s.proxyUrl) s.proxyUrl = "https://oyp-proxy.okyereyawpatrick1.workers.dev";
+    if(!s.bmsafricaCampaign) s.bmsafricaCampaign = "KROBOYPG";
+    if(!s.smsFrom) s.smsFrom = "KROBOYPG";
+    if(!s.fbUrl) s.fbUrl = "https://krobo-ypg-default-rtdb.firebaseio.com";
+    localStorage.setItem("kypg_settings", JSON.stringify(s));
+  } catch(e){}
+})();
+
+/* STORE */
+var LS_MEMBERS = "kypg_members";
+var LS_ATT = "kypg_att";
+var LS_DUES = "kypg_dues";
+var LS_DUE_AMOUNT = "kypg_due_amount";
+function getMembers(){return JSON.parse(localStorage.getItem(LS_MEMBERS)||"[]")}
+function saveMembers(m){localStorage.setItem(LS_MEMBERS,JSON.stringify(m))}
+function getAtt(){return JSON.parse(localStorage.getItem(LS_ATT)||"[]")}
+function saveAtt(a){localStorage.setItem(LS_ATT,JSON.stringify(a))}
+function getDues(){try{return JSON.parse(localStorage.getItem(LS_DUES)||"[]")}catch(e){return[]}}
+function saveDues(d){localStorage.setItem(LS_DUES,JSON.stringify(d))}
+function getDueAmount(){var v=parseFloat(localStorage.getItem(LS_DUE_AMOUNT));return isNaN(v)||v<=0?5:v}
+function setDueAmount(v){localStorage.setItem(LS_DUE_AMOUNT,String(v))}
+function genId(){return Date.now().toString(36)+Math.random().toString(36).slice(2,7)}
+function normalizePhone(p){if(!p)return"";p=String(p).trim().replace(/[^\d+]/g,"");if(p.length===9)return"233"+p;if(p.length===10&&p.charAt(0)==="0")return"233"+p.slice(1);return p}
+function err(m){var e=new Error(m);e.causedByCors=/Failed to fetch|NetworkError|CORS|Access-Control/i.test(m);return e}
+
+/* SETTINGS */
+var GOOD_KEY = "kle4U6xsDjOLEom4nCmpJIvCe";
+var BAD_KEYS = ["0TqOe2foLOL4HNbKr0PSYzqyf", "5DzEpqol3ZGwuB2bXXdQgeYZxX2", "invalid_api_key"];
+function getSettings(){
+  var s={provider:"bmsafrica",bmsafricaKey:GOOD_KEY,bmsafricaCampaign:"KROBOYPG",proxyUrl:"https://oyp-proxy.okyereyawpatrick1.workers.dev",smsFrom:"KROBOYPG",callFrom:"",fbUrl:"https://krobo-ypg-default-rtdb.firebaseio.com",fbPassword:""};
+  try{
+    var raw=JSON.parse(localStorage.getItem("kypg_settings")||"{}");
+    Object.keys(s).forEach(function(k){
+      if(raw[k]!==undefined&&raw[k]!==null&&String(raw[k]).trim()!=="")s[k]=raw[k];
+    });
+  }catch(e){}
+  if(BAD_KEYS.indexOf(s.bmsafricaKey)>-1)s.bmsafricaKey=GOOD_KEY;
+  if(!s.bmsafricaKey)s.bmsafricaKey=GOOD_KEY;
+  return s;
+}
+function saveSettings(s){localStorage.setItem("kypg_settings",JSON.stringify(s))}
+
+/* PROXY FETCH - key in URL query param */
+function proxyFetch(s, url, opts){
+  var proxy = s.proxyUrl;
+  if(proxy){
+    var payload = {url: url, method: opts.method||"POST", headers: opts.headers||{}};
+    if(opts.body) payload.body = opts.body;
+    if(opts.multipart){
+      payload.multipart = opts.multipart;
+      delete payload.body;
+    }
+    return fetch(proxy, {
+      method: "POST",
+      headers: {"Content-Type": "application/json"},
+      body: JSON.stringify(payload)
+    }).then(function(r){return r.json().then(function(p){return p.data!==undefined?p.data:p})});
+  }
+  return fetch(url, opts).then(function(r){return r.json().catch(function(){return null}).then(function(d){return d})});
+}
+
+var BMS_VOICE_URL = "https://api.mnotify.com/api/voice/quick";
+var BMS_SMS_URL = "https://api.mnotify.com/api/sms/quick";
+var BMS_BALANCE_URL = "https://api.mnotify.com/api/balance/voice";
+var BMS_SMS_BALANCE_URL = "https://api.mnotify.com/api/balance/sms";
+
+function toBmsNumber(n){var s=(n||"").replace(/^\+/,"");if(/^233\d{9}$/.test(s))return"0"+s.slice(3);return s}
+
+/* TOAST */
+function toast(msg){var t=document.getElementById("toast");t.textContent=msg;t.classList.add("show");setTimeout(function(){t.classList.remove("show")},2200)}
+function esc(s){return String(s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")}
+
+/* NAVIGATION */
+var currentTab = "dashboard";
+function navTo(tab){
+  currentTab = tab;
+  document.querySelectorAll(".tab-page").forEach(function(p){p.classList.remove("active")});
+  document.getElementById("tab-"+tab).classList.add("active");
+  document.querySelectorAll(".nav-item").forEach(function(b){b.classList.toggle("active",b.dataset.tab===tab)});
+  document.querySelectorAll(".bottom-nav-item").forEach(function(b){b.classList.toggle("active",b.dataset.tab===tab)});
+  var titles = {dashboard:"Dashboard",members:"Members",attendance:"Attendance",dues:"Dues / Payments",calls:"Bulk Calls",sms:"Bulk SMS",settings:"Settings"};
+  document.getElementById("pageTitle").textContent = titles[tab] || tab;
+  if(tab==="dashboard")renderDashboard();
+  if(tab==="members")renderMembers();
+  if(tab==="attendance")renderAttendance();
+  if(tab==="dues")renderDues();
+  if(tab==="calls")refreshVoiceBalance();
+  if(tab==="sms")refreshSmsBalance();
+  if(tab==="settings")loadSettings();
+  window.scrollTo(0,0);
+}
+document.querySelectorAll(".nav-item").forEach(function(b){b.addEventListener("click",function(){navTo(b.dataset.tab)})});
+document.querySelectorAll(".bottom-nav-item").forEach(function(b){b.addEventListener("click",function(){navTo(b.dataset.tab)})});
+document.getElementById("btnOpenMenu").addEventListener("click",function(){document.getElementById("sidebar").classList.add("open");document.getElementById("sidebarOverlay").classList.add("open")});
+document.getElementById("sidebarClose").addEventListener("click",function(){document.getElementById("sidebar").classList.remove("open");document.getElementById("sidebarOverlay").classList.remove("open")});
+document.getElementById("sidebarOverlay").addEventListener("click",function(){document.getElementById("sidebar").classList.remove("open");document.getElementById("sidebarOverlay").classList.remove("open")});
+
+/* MEMBERS */
+function renderMembers(){
+  var q=(document.getElementById("memberSearch").value||"").toLowerCase();
+  var members=getMembers().filter(function(m){return(m.name+" "+m.phone+" "+m.group).toLowerCase().includes(q)});
+  var list=document.getElementById("memberList");
+  document.getElementById("memberCount").textContent=members.length;
+  if(!members.length){list.innerHTML='<div class="empty">No members. Add one!</div>';return}
+  list.innerHTML=members.map(function(m){
+    return '<div class="contact"><input type="checkbox" class="memCheck" data-id="'+m.id+'" checked><div class="avatar">'+esc(m.name.charAt(0).toUpperCase())+'</div><div class="info"><span class="name">'+esc(m.name)+'</span><span class="num">'+esc(m.phone)+' '+esc(m.group||'')+'</span></div></div>';
+  }).join('');
+}
+function openMemberForm(){
+  document.getElementById("mfModal").classList.remove("hidden");
+}
+function addMember(){
+  var name=document.getElementById("memberName").value.trim();
+  var phone=document.getElementById("memberPhone").value.trim();
+  var group=document.getElementById("memberGroup").value.trim();
+  if(!name||!phone){toast("Name and phone required");return}
+  var m={id:genId(),name:name,phone:normalizePhone(phone),group:group,createdAt:new Date().toISOString()};
+  var members=getMembers();members.push(m);saveMembers(members);
+  document.getElementById("memberName").value="";document.getElementById("memberPhone").value="";document.getElementById("memberGroup").value="";
+  document.getElementById("memberAddStatus").innerHTML='<span class="status ok">Member added!</span>';
+  renderMembers();toast("Member added!");autoPush();
+}
+function getSelectedMembers(){
+  var checks=document.querySelectorAll(".memCheck:checked");
+  var ids=Array.from(checks).map(function(c){return c.dataset.id});
+  return getMembers().filter(function(m){return ids.indexOf(m.id)!==-1});
+}
+document.getElementById("btnAddMember").addEventListener("click",addMember);
+document.getElementById("btnLoadMembers").addEventListener("click",function(){renderMembers();toast("Loaded "+getMembers().length+" members")});
+document.getElementById("btnSelectAll").addEventListener("click",function(){
+  document.querySelectorAll(".memCheck").forEach(function(c){c.checked=true});
+});
+document.getElementById("btnAddSelectedToCalls").addEventListener("click",function(){
+  var sel=getSelectedMembers();
+  var nums=sel.map(function(m){return m.phone});
+  document.getElementById("callRecipients").value=nums.join("\n");
+  navTo("calls");toast(sel.length+" members added to calls");
+});
+document.getElementById("btnAddSelectedToSms").addEventListener("click",function(){
+  var sel=getSelectedMembers();
+  var nums=sel.map(function(m){return m.phone});
+  document.getElementById("smsRecipients").value=nums.join("\n");
+  navTo("sms");toast(sel.length+" members added to SMS");
+});
+
+/* ATTENDANCE */
+function renderAttendance(){
+  var date=document.getElementById("attDate").value;
+  var members=getMembers();
+  var list=document.getElementById("attendanceList");
+  if(!members.length){list.innerHTML='<div class="empty">Register members first.</div>';return}
+  var att=getAtt().find(function(a){return a.date===date});
+  list.innerHTML=members.map(function(m){
+    var checked=att&&att.members.find(function(x){return x.id===m.id})?att.members.find(function(x){return x.id===m.id}).present:true;
+    return '<div class="contact"><input type="checkbox" id="att_'+m.id+'" '+(checked?'checked':'')+'><div class="avatar">'+esc(m.name.charAt(0).toUpperCase())+'</div><div class="info"><span class="name">'+esc(m.name)+'</span><span class="num">'+esc(m.phone)+'</span></div></div>';
+  }).join('');
+}
+document.getElementById("attDate").addEventListener("change",renderAttendance);
+document.getElementById("btnSaveAttendance").addEventListener("click",function(){
+  var date=document.getElementById("attDate").value;
+  if(!date){toast("Select a date");return}
+  var members=getMembers();
+  var memberObjs=members.map(function(m){return{id:m.id,present:document.getElementById("att_"+m.id)?.checked||false}});
+  var att=getAtt();var idx=att.findIndex(function(a){return a.date===date});
+  if(idx!==-1)att[idx]={date,members:memberObjs};else att.push({date,members:memberObjs});
+  saveAtt(att);toast("Attendance saved!");autoPush();
+});
+
+/* BULK CALLS */
+function getCallRecipients(){
+  var text=document.getElementById("callRecipients").value;
+  return text.split("\n").map(function(n){return n.trim()}).filter(function(n){return n});
+}
+document.getElementById("callAddAll").addEventListener("click",function(){
+  document.getElementById("callRecipients").value=getMembers().map(function(m){return m.phone}).join("\n");
+  document.getElementById("callCount").textContent=getMembers().length+" recipients";
+});
+document.getElementById("callAddSelected").addEventListener("click",function(){
+  var sel=getSelectedMembers();
+  document.getElementById("callRecipients").value=sel.map(function(m){return m.phone}).join("\n");
+  document.getElementById("callCount").textContent=sel.length+" recipients";
+});
+document.getElementById("btnRefreshVoice").addEventListener("click",refreshVoiceBalance);
+document.getElementById("btnCallAll").addEventListener("click",sendBulkVoice);
+
+async function refreshVoiceBalance(){
+  var s=getSettings();
+  if(!s.bmsafricaKey){document.getElementById("voiceBalanceDisplay").innerHTML='<span style="color:var(--red)">No API key</span>';return}
+  try{
+    var res=await proxyFetch(s,BMS_BALANCE_URL+"?key="+encodeURIComponent(s.bmsafricaKey),{method:"GET"});
+    var bal=res.balance||0;
+    var mins=Math.floor(bal/60);var secs=bal%60;
+    document.getElementById("voiceBalanceDisplay").innerHTML=mins+" min "+secs+" sec credits remaining";
+  }catch(e){document.getElementById("voiceBalanceDisplay").innerHTML='<span style="color:var(--red)">Error loading balance</span>'}
+}
+
+async function sendBulkVoice(){
+  var s=getSettings();
+  if(!s.bmsafricaKey){toast("Set your BMS API key in Settings first");return}
+  var recipients=getCallRecipients();
+  if(!recipients.length){toast("No recipients");return}
+  var audioFile=document.getElementById("callAudioFile").files[0];
+  if(!audioFile){toast("Record or upload an audio file first");return}
+  var log=document.getElementById("callLog");
+  var progress=document.getElementById("callProgress");
+  progress.innerHTML='<span style="color:var(--gold)">Reading audio file...</span>';
+  log.innerHTML='';
+  try{
+    var prepared=await prepareAudioFile(audioFile);
+    var base64=await fileToBase64(prepared.blob);
+    var bmsNumbers=recipients.map(toBmsNumber);
+    progress.innerHTML='<span style="color:var(--gold)">Sending voice calls to '+recipients.length+' numbers...</span>';
+    var result=await proxyFetch(s,BMS_VOICE_URL+"?key="+encodeURIComponent(s.bmsafricaKey),{
+      method:"POST",
+      headers:{},
+      multipart:{
+        fields:{
+          campaign:s.bmsafricaCampaign||"KROBOYPG",
+          "recipient[]":bmsNumbers,
+          voice_id:"",
+          is_schedule:"false",
+          schedule_date:""
+        },
+        files:[{
+          name:"file",
+          filename:prepared.name,
+          contentType:prepared.blob.type||"audio/wav",
+          dataBase64:base64
+        }]
+      }
+    });
+    var d = result||{};
+    if(typeof d==="string")d={errors:{response:d}};
+    var msg = d.message||d.errorMessage||d.error||"";
+    if(d.errors){
+      var parts=Object.keys(d.errors).map(function(k){return k+": "+(Array.isArray(d.errors[k])?d.errors[k].join(", "):d.errors[k])});
+      msg=(msg?msg+" — ":"")+parts.join("; ");
+    }
+    if(!msg&&d.status==="success")msg="Done";
+    if(d.status==="error"||d.status==="failed"||d.errorMessage||d.error||msg==="Done"){
+      if(msg==="Done"){
+        progress.innerHTML='<span class="ok">Called '+recipients.length+' numbers!</span>';
+        log.innerHTML='<div class="ok">Campaign: '+(d._id||d.campaignId||"OK")+'</div><div class="ok">Credits used: '+(d.credit_used||"?")+'</div>';
+        toast("Bulk calls sent!");
+      }else{
+        progress.innerHTML='<span class="err">BMS Error: '+esc(msg)+'</span>';
+        log.innerHTML='<div class="err">'+esc(msg)+'</div>';
+      }
+    } else {
+      progress.innerHTML='<span class="ok">Called '+recipients.length+' numbers!</span>';
+      log.innerHTML='<div class="ok">Campaign: '+(d._id||d.campaignId||"OK")+'</div><div class="ok">Credits used: '+(d.credit_used||"?")+'</div>';
+      toast("Bulk calls sent!");
+    }
+  }catch(e){
+    progress.innerHTML='<span class="err">Error: '+esc(e.message)+'</span>';
+    log.innerHTML='<div class="err">'+esc(e.message)+'</div>';
+  }
+}
+
+/* AUDIO CONVERSION - webm/ogg recordings -> wav (mp3/mp4/wav only, per BMS) */
+function encodeWav(audioBuffer){
+  var numChannels=1,sampleRate=16000,numFrames=audioBuffer.length;
+  var blockAlign=numChannels*2,dataSize=numFrames*blockAlign;
+  var ab=new ArrayBuffer(44+dataSize),view=new DataView(ab);
+  function w(o,s){for(var i=0;i<s.length;i++)view.setUint8(o+i,s.charCodeAt(i))}
+  w(0,"RIFF");view.setUint32(4,36+dataSize,true);
+  w(8,"WAVE");w(12,"fmt ");view.setUint32(16,16,true);
+  view.setUint16(20,1,true);view.setUint16(22,numChannels,true);
+  view.setUint32(24,sampleRate,true);view.setUint32(28,sampleRate*blockAlign,true);
+  view.setUint16(32,blockAlign,true);view.setUint16(34,16,true);
+  w(36,"data");view.setUint32(40,dataSize,true);
+  var mono=new Float32Array(numFrames),chs=audioBuffer.numberOfChannels;
+  for(var ch=0;ch<chs;ch++){var d=audioBuffer.getChannelData(ch);for(var i=0;i<numFrames;i++)mono[i]+=d[i]/chs}
+  var step=audioBuffer.sampleRate/sampleRate,off=44;
+  for(var i=0;i<numFrames;i++){
+    var idx=Math.min(numFrames-1,Math.floor(i*step));
+    var v=Math.max(-1,Math.min(1,mono[idx]));
+    view.setInt16(off,v<0?v*0x8000:v*0x7FFF,true);off+=2;
+  }
+  return ab;
+}
+function blobToWav(blob){
+  return new Promise(function(resolve,reject){
+    var Ctx=window.AudioContext||window.webkitAudioContext;
+    if(!Ctx){reject(err("Audio conversion not supported"));return}
+    var ctx=new Ctx();
+    blob.arrayBuffer()
+      .then(function(buf){return ctx.decodeAudioData(buf)})
+      .then(function(ab){ctx.close();resolve(new Blob([encodeWav(ab)],{type:"audio/wav"}))})
+      .catch(function(e){try{ctx.close()}catch(x){}reject(err("Could not convert audio: "+e.message))});
+  });
+}
+function prepareAudioFile(file){
+  var ext=(file.name||"").split(".").pop().toLowerCase();
+  var type=(file.type||"").toLowerCase();
+  var isWebm=/webm/.test(type)||ext==="webm";
+  var isAllowed=/mp3|wav|flac|aac|wma|m4a|ogg/.test(type)||/(^|\.)(mp3|wav|flac|aac|wma|m4a|ogg)$/.test(ext);
+  if(!isWebm&&isAllowed)return Promise.resolve({blob:file,name:file.name||"voice.mp3"});
+  return blobToWav(file).then(function(wavBlob){
+    var base=(file.name||"voice").replace(/\.[a-z0-9]+$/i,"");
+    return {blob:wavBlob,name:(base||"voice")+".wav"};
+  });
+}
+function fileToBase64(file){
+  return new Promise(function(resolve,reject){
+    var reader=new FileReader();
+    reader.onload=function(){resolve(reader.result.split(",")[1])};
+    reader.onerror=function(){reject(err("Could not read audio file"))};
+    reader.readAsDataURL(file);
+  });
+}
+
+/* RECORDER */
+var mediaRecorder=null;
+var recordedChunks=[];
+document.getElementById("btnRecStart").addEventListener("click",async function(){
+  try{
+    var stream=await navigator.mediaDevices.getUserMedia({audio:true});
+    mediaRecorder=new MediaRecorder(stream);
+    recordedChunks=[];
+    mediaRecorder.ondataavailable=function(e){if(e.data.size>0)recordedChunks.push(e.data)};
+    mediaRecorder.addEventListener("stop",function(){
+      clearInterval(window._recTimer);
+      if(!recordedChunks.length){toast("No audio captured");return}
+      var type=mediaRecorder.mimeType||"audio/webm";
+      var blob=new Blob(recordedChunks,{type:type});
+      var ext=(type.indexOf("mp4")>-1||type.indexOf("aac")>-1)?"m4a":
+              (type.indexOf("ogg")>-1)?"ogg":
+              (type.indexOf("wav")>-1)?"wav":"webm";
+      var d=new Date(),p=function(n){return(n<10?"0":"")+n};
+      var stamp=d.getFullYear()+"-"+p(d.getMonth()+1)+"-"+p(d.getDate())+" "+p(d.getHours())+"."+p(d.getMinutes())+"."+p(d.getSeconds());
+      var file=new File([blob],"recording-"+stamp.replace(/[ :.-]/g,"")+"."+ext,{type:type});
+      var dt=new DataTransfer();dt.items.add(file);
+      var input=document.getElementById("callAudioFile");
+      input.files=dt.files;
+      var preview=document.getElementById("recordingPreview");
+      preview.src=URL.createObjectURL(blob);
+      document.getElementById("recordingPreviewWrap").style.display="block";
+      document.getElementById("recordingHint").textContent="Recorded at "+stamp+" - ready to send";
+      document.getElementById("audioFileHint").textContent="Recording ready: "+file.name+" ("+Math.round(file.size/1024)+" KB)";
+      toast("Recording ready - you can send it now");
+    });
+    mediaRecorder.start();
+    document.getElementById("btnRecStart").disabled=true;
+    document.getElementById("btnRecStart").classList.add("recording");
+    document.getElementById("btnRecStop").disabled=false;
+    document.getElementById("recTimer").textContent="Recording...";
+    var secs=0;
+    var timer=setInterval(function(){secs++;document.getElementById("recTimer").textContent=secs+" sec"},1000);
+    window._recTimer=timer;
+  }catch(e){toast("Microphone access denied")}
+});
+document.getElementById("btnRecStop").addEventListener("click",function(){
+  if(mediaRecorder&&mediaRecorder.state!=="inactive"){
+    mediaRecorder.stop();
+    document.getElementById("btnRecStart").disabled=false;
+    document.getElementById("btnRecStart").classList.remove("recording");
+    document.getElementById("btnRecStop").disabled=true;
+    document.getElementById("recTimer").textContent="Recording stopped";
+  }
+});
+document.getElementById("btnRecDiscard").addEventListener("click",function(){
+  recordedChunks=[];
+  document.getElementById("recordingPreviewWrap").style.display="none";
+  var input=document.getElementById("callAudioFile");
+  var dt=new DataTransfer();input.files=dt.files;
+  document.getElementById("audioFileHint").textContent="No file selected.";
+  toast("Recording discarded");
+});
+document.getElementById("callAudioFile").addEventListener("change",function(){
+  var f=this.files[0];
+  document.getElementById("audioFileHint").textContent=f?(f.name+" ("+Math.round(f.size/1024)+" KB)"):"No file selected.";
+  if(f&&document.getElementById("recordingPreviewWrap").style.display==="block"){
+    document.getElementById("recordingPreviewWrap").style.display="none";
+    recordedChunks=[];
+  }
+});
+
+/* BULK SMS */
+function getSmsRecipients(){
+  var text=document.getElementById("smsRecipients").value;
+  return text.split("\n").map(function(n){return n.trim()}).filter(function(n){return n});
+}
+document.getElementById("smsAddAll").addEventListener("click",function(){
+  document.getElementById("smsRecipients").value=getMembers().map(function(m){return m.phone}).join("\n");
+  document.getElementById("smsCount").textContent=getMembers().length+" recipients";
+});
+document.getElementById("smsAddSelected").addEventListener("click",function(){
+  var sel=getSelectedMembers();
+  document.getElementById("smsRecipients").value=sel.map(function(m){return m.phone}).join("\n");
+  document.getElementById("smsCount").textContent=sel.length+" recipients";
+});
+document.getElementById("btnRefreshSms").addEventListener("click",refreshSmsBalance);
+document.getElementById("btnSendSms").addEventListener("click",sendBulkSms);
+document.getElementById("smsMessage").addEventListener("input",function(){
+  var len=this.value.length;
+  document.getElementById("smsCharCount").textContent=len+" characters";
+});
+
+async function refreshSmsBalance(){
+  var s=getSettings();
+  if(!s.bmsafricaKey){document.getElementById("smsBalanceDisplay").innerHTML='<span style="color:var(--red)">No API key</span>';return}
+  try{
+    var res=await proxyFetch(s,BMS_SMS_BALANCE_URL+"?key="+encodeURIComponent(s.bmsafricaKey),{method:"GET"});
+    document.getElementById("smsBalanceDisplay").innerHTML=(res.balance||0)+" credits remaining";
+  }catch(e){document.getElementById("smsBalanceDisplay").innerHTML='<span style="color:var(--red)">Error</span>'}
+}
+
+async function sendBulkSms(){
+  var s=getSettings();
+  if(!s.bmsafricaKey){toast("Set your BMS API key in Settings first");return}
+  var recipients=getSmsRecipients();
+  var message=document.getElementById("smsMessage").value.trim();
+  var sender=document.getElementById("smsSenderId").value.trim()||s.smsFrom||"KROBOYPG";
+  if(!recipients.length){toast("No recipients");return}
+  if(!message){toast("Enter a message");return}
+  var log=document.getElementById("smsLog");
+  var progress=document.getElementById("smsProgress");
+  progress.innerHTML='<span style="color:var(--gold)">Sending SMS to '+recipients.length+' numbers...</span>';
+  log.innerHTML='';
+  try{
+    var result=await proxyFetch(s,BMS_SMS_URL+"?key="+encodeURIComponent(s.bmsafricaKey),{
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({recipient:recipients.map(toBmsNumber),sender:sender,message:message})
+    });
+    var d = result || {};
+    if(d.status==="error"||d.status==="failed"||d.errorMessage||d.error){
+      var msg = d.message||d.errorMessage||d.error||JSON.stringify(d);
+      progress.innerHTML='<span class="err">BMS Error: '+msg+'</span>';
+      log.innerHTML='<div class="err">'+msg+'</div><div class="info">Full response: '+JSON.stringify(d).slice(0,500)+'</div>';
+      if(/invalid.*key|auth|unauthorized/i.test(msg))toast("Invalid API key - check Settings");
+    } else if(d.status>=400){
+      progress.innerHTML='<span class="err">HTTP Error: '+d.status+'</span>';
+    } else {
+      progress.innerHTML='<span class="ok">SMS sent to '+recipients.length+' numbers!</span>';
+      log.innerHTML='<div class="ok">Credits used: '+(d.credit_used||"?")+'</div>';
+      toast("Bulk SMS sent!");
+    }
+  }catch(e){
+    progress.innerHTML='<span class="err">Error: '+e.message+'</span>';
+    log.innerHTML='<div class="err">'+e.message+'</div>';
+    if(e.causedByCors)toast("CORS error - check Proxy URL in Settings");
+  }
+}
+
+/* SETTINGS */
+function loadSettings(){
+  var s=getSettings();
+  document.getElementById("setBmsKey").value=s.bmsafricaKey||"";
+  document.getElementById("setCampaign").value=s.bmsafricaCampaign||"KROBOYPG";
+  document.getElementById("setProxyUrl").value=s.proxyUrl||"";
+  document.getElementById("setFbUrl").value=s.fbUrl||"";
+  document.getElementById("setFbPassword").value=s.fbPassword||"";
+  document.getElementById("fbShareLink").textContent=s.fbUrl?"Cloud ready. Other phones: same URL + password, then tap Sync from Cloud.":"";
+  document.getElementById("setBmsKey").focus();
+}
+document.getElementById("btnSaveSettings").addEventListener("click",function(){
+  var s=getSettings();
+  s.bmsafricaKey=document.getElementById("setBmsKey").value.trim();
+  s.bmsafricaCampaign=document.getElementById("setCampaign").value.trim();
+  s.proxyUrl=document.getElementById("setProxyUrl").value.trim();
+  s.fbUrl=document.getElementById("setFbUrl").value.trim();
+  s.fbPassword=document.getElementById("setFbPassword").value.trim();
+  saveSettings(s);
+  document.getElementById("apiTestResult").innerHTML='<span class="status ok">Settings saved!</span>';
+  toast("Settings saved!");
+  var cs=document.getElementById("cloudStatus");
+  if(s.fbUrl){
+    cs.innerHTML='<span style="color:var(--gold)">Uploading to the cloud...</span>';
+    syncPush(s).then(function(r){
+      cs.innerHTML=r.ok?'<span class="ok">Saved and synced to the cloud.</span>':'<span style="color:var(--red)">Cloud sync failed: '+esc(r.error)+'</span>';
+    });
+    loadSettings();
+  }
+});
+document.getElementById("btnTestApi").addEventListener("click",async function(){
+  var s=getSettings();
+  if(!s.bmsafricaKey){document.getElementById("apiTestResult").innerHTML='<span class="err">Enter API key first</span>';return}
+  document.getElementById("apiTestResult").innerHTML='<span style="color:var(--gold)">Testing...</span>';
+  try{
+    var res=await proxyFetch(s,BMS_BALANCE_URL+"?key="+encodeURIComponent(s.bmsafricaKey),{method:"GET"});
+    var d = res || {};
+    if(d.status==="success"||d.balance!==undefined){
+      var bal=d.balance||0;var mins=Math.floor(bal/60);var secs=bal%60;
+      document.getElementById("apiTestResult").innerHTML='<span class="ok">Connection OK! '+mins+' min '+secs+' sec voice credits</span>';
+      toast("API connected!");
+    } else if(d.status==="error"||d.errorMessage||d.error){
+      var msg=d.message||d.errorMessage||d.error||JSON.stringify(d);
+      document.getElementById("apiTestResult").innerHTML='<span class="err">BMS Error: '+msg+'</span>';
+      toast("Invalid key - check BMS dashboard");
+    } else {
+      document.getElementById("apiTestResult").innerHTML='<span class="err">Unexpected: '+JSON.stringify(res).slice(0,300)+'</span>';
+    }
+  }catch(e){
+    document.getElementById("apiTestResult").innerHTML='<span class="err">Error: '+e.message+'</span>';
+    if(e.causedByCors)toast("CORS error - check Proxy URL");
+  }
+});
+
+/* DUES & PAYMENTS */
+function currentMonth(){var d=new Date();return d.getFullYear()+"-"+("0"+(d.getMonth()+1)).slice(-2)}
+function paidIdsForMonth(month){return getDues().filter(function(d){return d.month===month}).map(function(d){return d.memberId})}
+document.getElementById("duesMonth").addEventListener("change",renderDues);
+document.getElementById("btnSelectPaid").addEventListener("click",function(){document.querySelectorAll(".dueCheck").forEach(function(c){c.checked=true});renderDuesSummary();});
+document.getElementById("btnUnselectPaid").addEventListener("click",function(){document.querySelectorAll(".dueCheck").forEach(function(c){c.checked=false});renderDuesSummary();});
+document.getElementById("btnSaveDueAmount").addEventListener("click",function(){
+  var v=parseFloat(document.getElementById("duesAmount").value);
+  if(isNaN(v)||v<=0){toast("Enter a valid amount");return}
+  setDueAmount(v);toast("Due amount set to GHS "+v.toFixed(2));renderDues();autoPush();
+});
+document.getElementById("btnSaveDues").addEventListener("click",saveDuesPayments);
+document.getElementById("btnDuesDownload").addEventListener("click",downloadDuesReport);
+document.getElementById("duesList").addEventListener("change",function(e){if(e.target.classList.contains("dueCheck"))renderDuesSummary()});
+
+function renderDues(){
+  var month=document.getElementById("duesMonth").value||currentMonth();
+  document.getElementById("duesMonth").value=month;
+  document.getElementById("duesAmount").value=getDueAmount();
+  var members=getMembers();
+  var list=document.getElementById("duesList");
+  if(!members.length){list.innerHTML='<div class="empty">Register members first.</div>';renderDuesSummary();return}
+  var paid=paidIdsForMonth(month);
+  list.innerHTML=members.map(function(m){
+    var checked=paid.indexOf(m.id)!==-1;
+    return '<div class="contact"><input type="checkbox" class="dueCheck" data-id="'+m.id+'" '+(checked?'checked':'')+'><div class="avatar">'+esc(m.name.charAt(0).toUpperCase())+'</div><div class="info"><span class="name">'+esc(m.name)+'</span><span class="num">'+esc(m.phone)+'</span></div></div>';
+  }).join('');
+  renderDuesSummary();
+}
+function renderDuesSummary(){
+  var members=getMembers();
+  var total=members.length;
+  var paidCount=document.querySelectorAll(".dueCheck:checked").length;
+  var amt=getDueAmount();
+  var hint=document.getElementById("duesProgressHint");
+  if(total){hint.innerHTML='<span class="dues-badge '+(paidCount>=total?'ok':'bad')+'">'+paidCount+' of '+total+' paid &middot; GHS '+(paidCount*amt).toFixed(2)+' / GHS '+(total*amt).toFixed(2)+'</span>'}
+  else hint.innerHTML="";
+  renderDuesReport(document.getElementById("duesMonth").value||currentMonth());
+}
+function saveDuesPayments(){
+  var month=document.getElementById("duesMonth").value;
+  if(!month){toast("Select a month");return}
+  var amt=getDueAmount();
+  var without=getDues().filter(function(d){return d.month!==month});
+  var members=getMembers();
+  var now=new Date().toISOString();
+  document.querySelectorAll(".dueCheck:checked").forEach(function(c){
+    var m=members.find(function(x){return x.id===c.dataset.id});
+    if(m)without.push({id:genId(),memberId:m.id,month:month,amount:amt,date:now});
+  });
+  saveDues(without);
+  document.getElementById("duesSaveStatus").innerHTML='<span class="ok">Payments saved for '+month+'</span>';
+  toast("Payments saved!");
+  renderDues();autoPush();
+}
+function monthStats(month){
+  var members=getMembers();
+  var paid=paidIdsForMonth(month);
+  var total=members.length;
+  var paidCount=members.filter(function(m){return paid.indexOf(m.id)!==-1}).length;
+  var amt=getDueAmount();
+  var collected=getDues().filter(function(d){return d.month===month}).reduce(function(s,d){return s+(d.amount||0)},0);
+  if(collected===0&&paidCount>0)collected=paidCount*amt;
+  return {total:total,paid:paidCount,unpaid:total-paidCount,amount:amt,collected:collected};
+}
+function renderDuesReport(month){
+  var st=monthStats(month);
+  document.getElementById("duesPaidCount").textContent=st.paid;
+  document.getElementById("duesUnpaidCount").textContent=st.unpaid;
+  document.getElementById("duesReportSummary").innerHTML='<strong>'+st.paid+'</strong> of <strong>'+st.total+'</strong> members paid &middot; GHS <strong>'+st.collected.toFixed(2)+'</strong> of GHS '+(st.total*st.amount).toFixed(2)+' expected.';
+  var members=getMembers();
+  var paidIds=paidIdsForMonth(month);
+  function row(m,cls){return '<div class="contact"><div class="avatar">'+esc(m.name.charAt(0).toUpperCase())+'</div><div class="info"><span class="name">'+esc(m.name)+'</span><span class="num">'+esc(m.phone)+'</span></div><span class="dues-badge '+(cls?'ok':'bad')+'">'+(cls?'PAID':'UNPAID')+'</span></div>'}
+  var paidEl=document.getElementById("duesReportPaid");
+  var unpaidEl=document.getElementById("duesReportUnpaid");
+  paidEl.innerHTML=members.filter(function(m){return paidIds.indexOf(m.id)!==-1}).map(function(m){return row(m,1)}).join("")||'<div class="empty">No payments yet this month.</div>';
+  unpaidEl.innerHTML=members.filter(function(m){return paidIds.indexOf(m.id)===-1}).map(function(m){return row(m,0)}).join("")||'<div class="empty">Everyone has paid!</div>';
+}
+function downloadDuesReport(){
+  var month=document.getElementById("duesMonth").value||currentMonth();
+  var st=monthStats(month);
+  var paidIds=paidIdsForMonth(month);
+  var csv=[];csv.push("Month,Name,Phone,Amount (GHS),Status");
+  getMembers().forEach(function(m){
+    var paid=paidIds.indexOf(m.id)!==-1;
+    csv.push([month,'"'+String(m.name).replace(/"/g,'""')+'"',m.phone,paid?(st.amount||0):"",paid?"PAID":"UNPAID"].join(","));
+  });
+  csv.push("");
+  csv.push("Summary,"+st.paid+" paid / "+st.unpaid+" unpaid,"+st.total+" members,GHS "+st.collected.toFixed(2)+" collected,");
+  var blob=new Blob([csv.join("\r\n")],{type:"text/csv;charset=utf-8"});
+  var a=document.createElement("a");
+  a.href=URL.createObjectURL(blob);
+  a.download="krobo-ypg-dues-"+month+".csv";
+  document.body.appendChild(a);a.click();document.body.removeChild(a);
+  toast("Report downloaded");
+}
+
+/* DASHBOARD */
+function renderDashboard(){
+  var members=getMembers();
+  document.getElementById("dashMembers").textContent=members.length;
+  var st=monthStats(currentMonth());
+  document.getElementById("dashDuesPaid").innerHTML=st.paid+'/<span id="dashDuesTotal">'+st.total+'</span>';
+  document.getElementById("dashDuesCollected").textContent=st.collected.toFixed(2);
+  loadDashBalances();
+}
+function loadDashBalances(){
+  var s=getSettings();
+  if(!s.bmsafricaKey){document.getElementById("dashSms").textContent="\u2014";document.getElementById("dashVoice").textContent="\u2014";return}
+  proxyFetch(s,BMS_SMS_BALANCE_URL+"?key="+encodeURIComponent(s.bmsafricaKey),{method:"GET"})
+    .then(function(res){document.getElementById("dashSms").textContent=(res&&res.balance)||0})
+    .catch(function(){document.getElementById("dashSms").textContent="\u2014"});
+  proxyFetch(s,BMS_BALANCE_URL+"?key="+encodeURIComponent(s.bmsafricaKey),{method:"GET"})
+    .then(function(res){
+      var bal=(res&&res.balance)||0;
+      document.getElementById("dashVoice").textContent=Math.floor(bal/60)+"m "+(bal%60)+"s";
+    })
+    .catch(function(){document.getElementById("dashVoice").textContent="\u2014"});
+}
+
+/* TOP UP - opens BMS dashboard to buy credits */
+var TOPUP_VOICE="https://app.bms.africa/dashboard/voice/overview";
+var TOPUP_SMS="https://app.bms.africa/dashboard";
+function topUpVoice(){window.open(TOPUP_VOICE,"_blank")}
+function topUpSms(){window.open(TOPUP_SMS,"_blank")}
+document.getElementById("btnTopUpVoice").addEventListener("click",topUpVoice);
+document.getElementById("btnTopUpSms").addEventListener("click",topUpSms);
+
+/* CLOUD SYNC - Firebase Realtime Database via plain REST (OYEREPA format) */
+function fbUrl(dbUrl,path){return dbUrl.replace(/\/+$/,"")+"/"+path+".json"}
+function fbFetch(dbUrl,path,method,body){
+  return fetch(fbUrl(dbUrl,path),{method:method,body:body?JSON.stringify(body):undefined,headers:{"Content-Type":"application/json"}})
+    .then(function(r){return r.json().catch(function(){return null})});
+}
+function syncPush(s){
+  if(!s.fbUrl)return Promise.resolve({ok:false,error:"No Firebase URL set"});
+  var data={settings:s,members:getMembers(),attendance:getAtt(),dues:getDues(),dueAmount:getDueAmount()};
+  if(s.fbPassword)data.password=s.fbPassword;
+  return fbFetch(s.fbUrl,"kypg","PUT",data).then(function(res){return{ok:true}})
+    .catch(function(e){return{ok:false,error:"Could not reach Firebase: "+e.message}});
+}
+function syncPull(s){
+  if(!s.fbUrl)return Promise.resolve({ok:false,error:"No Firebase URL set",changed:false});
+  return fbFetch(s.fbUrl,"kypg","GET").then(function(res){
+    if(!res||!res.members)return{ok:false,error:"Nothing in the cloud yet. Tap Save to Cloud on one device first.",changed:false};
+    if(s.fbPassword&&res.password&&res.password!==s.fbPassword)return{ok:false,error:"Wrong share password.",changed:false};
+    var changed=false;
+    if(Array.isArray(res.members)&&JSON.stringify(res.members)!==JSON.stringify(getMembers())){saveMembers(res.members);changed=true}
+    if(Array.isArray(res.attendance)&&JSON.stringify(res.attendance)!==JSON.stringify(getAtt())){saveAtt(res.attendance);changed=true}
+    if(Array.isArray(res.dues)&&JSON.stringify(res.dues)!==JSON.stringify(getDues())){saveDues(res.dues);changed=true}
+    if(typeof res.dueAmount==="number"&&!isNaN(res.dueAmount)&&res.dueAmount!==getDueAmount()){setDueAmount(res.dueAmount);changed=true}
+    if(res.settings&&typeof res.settings==="object"){saveSettings(res.settings);changed=true}
+    return{ok:true,changed:changed};
+  }).catch(function(e){return{ok:false,error:"Could not reach Firebase: "+e.message,changed:false}});
+}
+function refreshAfterSync(){try{renderMembers()}catch(e){}try{renderAttendance()}catch(e){}try{renderDues()}catch(e){}renderDashboard()}
+var _pushT=null,_lastPull=0,_pulling=false;
+function autoPush(){
+  var s=getSettings();
+  if(!s.fbUrl)return;
+  clearTimeout(_pushT);
+  _pushT=setTimeout(function(){syncPush(getSettings()).catch(function(){})},800);
+}
+function autoPull(force){
+  if(_pulling)return;
+  var s=getSettings();
+  if(!s.fbUrl)return;
+  var now=Date.now();
+  if(!force&&now-_lastPull<10000)return;
+  _lastPull=now;_pulling=true;
+  syncPull(s).then(function(r){if(r.ok&&r.changed)refreshAfterSync()}).catch(function(){}).then(function(){_pulling=false});
+}
+document.getElementById("btnPushCloud").addEventListener("click",function(){
+  var s=getSettings();
+  var cs=document.getElementById("cloudStatus");
+  if(!s.fbUrl){cs.innerHTML='<span style="color:var(--red)">Enter your Firebase URL first.</span>';return}
+  cs.innerHTML='<span style="color:var(--gold)">Uploading...</span>';
+  syncPush(s).then(function(r){cs.innerHTML=r.ok?'<span class="ok">Uploaded to the cloud.</span>':'<span style="color:var(--red)">Failed: '+esc(r.error)+'</span>'});
+});
+document.getElementById("btnPullCloud").addEventListener("click",function(){
+  var s=getSettings();
+  var cs=document.getElementById("cloudStatus");
+  if(!s.fbUrl){cs.innerHTML='<span style="color:var(--red)">Enter your Firebase URL first.</span>';return}
+  cs.innerHTML='<span style="color:var(--gold)">Syncing...</span>';
+  syncPull(s).then(function(r){
+    if(r.ok){
+      cs.innerHTML=r.changed?'<span class="ok">Synced from the cloud.</span>':'<span class="ok">Already up to date.</span>';
+      if(r.changed)refreshAfterSync();
+    } else {
+      cs.innerHTML='<span style="color:var(--red)">'+esc(r.error)+'</span>';
+    }
+  });
+});
+window.addEventListener("load",function(){autoPull(true)});
+window.addEventListener("focus",function(){autoPull(false)});
+setInterval(function(){autoPull(false)},60000);
+
+/* Init */
+navTo("dashboard");
+</script>
+</body>
+</html>
