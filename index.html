@@ -1180,17 +1180,18 @@ function syncPull(s){
     if(Array.isArray(res.dues)&&JSON.stringify(res.dues)!==JSON.stringify(getDues())){saveDues(res.dues);changed=true}
     if(typeof res.dueAmount==="number"&&!isNaN(res.dueAmount)&&res.dueAmount!==getDueAmount()){setDueAmount(res.dueAmount);changed=true}
     if(res.settings&&typeof res.settings==="object"){saveSettings(res.settings);changed=true}
-    if(changed)markLocalChanged();
+    if(changed){localStorage.setItem(LS_TS,String(res.updatedAt||Date.now()))}
     return{ok:true,changed:changed};
   }).catch(function(e){return{ok:false,error:"Could not reach Firebase: "+e.message,changed:false}});
 }
 function refreshAfterSync(){try{renderMembers()}catch(e){}try{renderAttendance()}catch(e){}try{renderDues()}catch(e){}renderDashboard()}
 var _pushT=null,_lastPull=0,_pulling=false;
+var _pushChain=Promise.resolve();
 function pushNow(){
   var s=getSettings();
   if(!s.fbUrl)return;
   clearTimeout(_pushT);
-  syncPush(s).catch(function(){});
+  _pushChain=_pushChain.then(function(){return syncPush(getSettings()).catch(function(){})});
 }
 function autoPush(){
   var s=getSettings();
