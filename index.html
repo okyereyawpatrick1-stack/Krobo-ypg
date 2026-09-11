@@ -59,6 +59,7 @@ select.input{cursor:pointer}
 .btn-ghost{border-color:transparent;color:var(--text2);background:transparent}
 .btn-ghost:hover{background:rgba(245,158,11,.1);color:var(--gold)}
 .btn-danger{border-color:var(--red);color:var(--red);background:rgba(239,68,68,.1)}
+.btn-danger.armed{background:var(--red);color:#fff;font-weight:700}
 .btn-record{background:var(--red);border-color:var(--red);color:#fff}
 .btn-record.recording{animation:pulse 1s infinite}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
@@ -466,6 +467,9 @@ function getDues(){try{return JSON.parse(localStorage.getItem(LS_DUES)||"[]")}ca
 function saveDues(d){localStorage.setItem(LS_DUES,JSON.stringify(d))}
 function getDueAmount(){var v=parseFloat(localStorage.getItem(LS_DUE_AMOUNT));return isNaN(v)||v<=0?5:v}
 function setDueAmount(v){localStorage.setItem(LS_DUE_AMOUNT,String(v))}
+var LS_TS="kypg_updated_at";
+function localTs(){return parseInt(localStorage.getItem(LS_TS)||"0",10)||0}
+function markLocalChanged(){localStorage.setItem(LS_TS,String(Date.now()))}
 function genId(){return Date.now().toString(36)+Math.random().toString(36).slice(2,7)}
 function normalizePhone(p){if(!p)return"";p=String(p).trim().replace(/[^\d+]/g,"");if(p.length===9)return"233"+p;if(p.length===10&&p.charAt(0)==="0")return"233"+p.slice(1);return p}
 function err(m){var e=new Error(m);e.causedByCors=/Failed to fetch|NetworkError|CORS|Access-Control/i.test(m);return e}
@@ -566,7 +570,7 @@ function addMember(){
   var members=getMembers();members.push(m);saveMembers(members);
   document.getElementById("memberName").value="";document.getElementById("memberPhone").value="";document.getElementById("memberGroup").value="";
   document.getElementById("memberAddStatus").innerHTML='<span class="status ok">Member added!</span>';
-  renderMembers();toast("Member added!");pushNow();
+  renderMembers();toast("Member added!");markLocalChanged();pushNow();
 }
 function getSelectedMembers(){
   var checks=document.querySelectorAll(".memCheck:checked");
@@ -601,17 +605,27 @@ function renderManage(){
     return '<div class="contact"><div class="avatar">'+esc(m.name.charAt(0).toUpperCase())+'</div><div class="info"><span class="name">'+esc(m.name)+'</span><span class="num">'+esc(m.phone)+' '+esc(m.group||'')+'</span></div><button class="btn btn-danger" onclick="deleteMember(\''+m.id+'\',this)">Delete</button></div>';
   }).join('');
 }
+function resetDeleteBtn(btn){
+  btn.dataset.armed="0";btn.classList.remove("armed");
+  btn.textContent="Delete";
+}
 function deleteMember(id,btn){
   var members=getMembers();
   var m=members.find(function(x){return x.id===id});
   if(!m){toast("Member not found");return}
-  if(!confirm('Delete "'+m.name+'" permanently? This also removes their attendance and dues records.'))return;
-  btn.disabled=true;
-  members=members.filter(function(x){return x.id!==id});saveMembers(members);
+  if(btn.dataset.armed!=="1"){
+    btn.dataset.armed="1";btn.classList.add("armed");btn.textContent="Tap again to confirm";
+    clearTimeout(btn._t);
+    btn._t=setTimeout(function(){resetDeleteBtn(btn)},3000);
+    return;
+  }
+  clearTimeout(btn._t);
+  btn.disabled=true;btn.textContent="Deleting...";
+  saveMembers(members.filter(function(x){return x.id!==id}));
   saveAtt(getAtt().map(function(rec){return{date:rec.date,members:rec.members.filter(function(x){return x.id!==id})}}).filter(function(rec){return rec.members.length}));
   saveDues(getDues().map(function(rec){return{month:rec.month,members:rec.members.filter(function(x){return x.id!==id})}}).filter(function(rec){return rec.members.length}));
   renderManage();renderMembers();renderAttendance();renderDues();renderDashboard();
-  toast('Deleted "'+m.name+'"');pushNow();
+  toast('Deleted "'+m.name+'"');markLocalChanged();pushNow();
 }
 document.getElementById("manageSearch").addEventListener("input",renderManage);
 
@@ -677,7 +691,7 @@ document.getElementById("btnSaveAttendance").addEventListener("click",function()
   if(idx!==-1)att[idx]={date,members:memberObjs};else att.push({date,members:memberObjs});
   saveAtt(att);
   document.getElementById("attSaveStatus").innerHTML='<span class="ok">Attendance saved for '+date+'</span>';
-  toast("Attendance saved!");renderAttReport(date);pushNow();
+  toast("Attendance saved!");renderAttReport(date);markLocalChanged();pushNow();
 });
 
 /* BULK CALLS */
@@ -977,6 +991,7 @@ document.getElementById("btnSaveSettings").addEventListener("click",function(){
   s.fbUrl=document.getElementById("setFbUrl").value.trim();
   s.fbPassword=document.getElementById("setFbPassword").value.trim();
   saveSettings(s);
+  markLocalChanged();
   document.getElementById("apiTestResult").innerHTML='<span class="status ok">Settings saved!</span>';
   toast("Settings saved!");
   var cs=document.getElementById("cloudStatus");
@@ -1021,7 +1036,7 @@ document.getElementById("btnUnselectPaid").addEventListener("click",function(){d
 document.getElementById("btnSaveDueAmount").addEventListener("click",function(){
   var v=parseFloat(document.getElementById("duesAmount").value);
   if(isNaN(v)||v<=0){toast("Enter a valid amount");return}
-  setDueAmount(v);toast("Due amount set to GHS "+v.toFixed(2));renderDues();pushNow();
+  setDueAmount(v);toast("Due amount set to GHS "+v.toFixed(2));markLocalChanged();renderDues();pushNow();
 });
 document.getElementById("btnSaveDues").addEventListener("click",saveDuesPayments);
 document.getElementById("btnDuesDownload").addEventListener("click",downloadDuesReport);
@@ -1065,7 +1080,7 @@ function saveDuesPayments(){
   saveDues(without);
   document.getElementById("duesSaveStatus").innerHTML='<span class="ok">Payments saved for '+month+'</span>';
   toast("Payments saved!");
-  renderDues();pushNow();
+renderDues();markLocalChanged();pushNow();
 }
 function monthStats(month){
   var members=getMembers();
@@ -1148,7 +1163,7 @@ function fbFetch(dbUrl,path,method,body,keepalive){
 }
 function syncPush(s){
   if(!s.fbUrl)return Promise.resolve({ok:false,error:"No Firebase URL set"});
-  var data={settings:s,members:getMembers(),attendance:getAtt(),dues:getDues(),dueAmount:getDueAmount()};
+  var data={settings:s,members:getMembers(),attendance:getAtt(),dues:getDues(),dueAmount:getDueAmount(),updatedAt:localTs()||Date.now()};
   if(s.fbPassword)data.password=s.fbPassword;
   return fbFetch(s.fbUrl,"kypg","PUT",data,true).then(function(res){return{ok:true}})
     .catch(function(e){return{ok:false,error:"Could not reach Firebase: "+e.message}});
@@ -1158,12 +1173,14 @@ function syncPull(s){
   return fbFetch(s.fbUrl,"kypg","GET").then(function(res){
     if(!res||!res.members)return{ok:false,error:"Nothing in the cloud yet. Tap Save to Cloud on one device first.",changed:false};
     if(s.fbPassword&&res.password&&res.password!==s.fbPassword)return{ok:false,error:"Wrong share password.",changed:false};
+    if(!res.updatedAt||res.updatedAt<=localTs())return{ok:true,changed:false};
     var changed=false;
     if(Array.isArray(res.members)&&JSON.stringify(res.members)!==JSON.stringify(getMembers())){saveMembers(res.members);changed=true}
     if(Array.isArray(res.attendance)&&JSON.stringify(res.attendance)!==JSON.stringify(getAtt())){saveAtt(res.attendance);changed=true}
     if(Array.isArray(res.dues)&&JSON.stringify(res.dues)!==JSON.stringify(getDues())){saveDues(res.dues);changed=true}
     if(typeof res.dueAmount==="number"&&!isNaN(res.dueAmount)&&res.dueAmount!==getDueAmount()){setDueAmount(res.dueAmount);changed=true}
     if(res.settings&&typeof res.settings==="object"){saveSettings(res.settings);changed=true}
+    if(changed)markLocalChanged();
     return{ok:true,changed:changed};
   }).catch(function(e){return{ok:false,error:"Could not reach Firebase: "+e.message,changed:false}});
 }
